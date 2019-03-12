@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+RealDash CAN protocol example
+Requires RealDash version 1.3.0 or newer
+-->
+<RealDashCAN>
+  <!-- baseId [optional] is added to each frame canId. -->
+  <!-- frames baseId="3200" -->
+  <frames>
+    <!-- 'canId' can identifier (= baseId + canId) -->
+    <frame canId="3200">
+      <!-- 'targetId' links value to RealDash input, see 'realdash_target_identifiers.txt for a complete list -->
+      <!-- OR -->
+      <!-- 'name' links value to RealDash input, if name is unknown to RealDash, input appears in 'ECU Specific' input category -->
+
+      <!-- 'units' is used for post calculations, "F", "mph", "psi", "bit" which need to be specified for dashboard conversions to work properly -->
+      <!-- 'offset' byte offset of the value in frame -->
+      <!-- 'length' value length in bytes -->
+      <!-- 'conversion' if omitted, value is read 'as-is'. Otherwise variables 'B0', 'B1', 'B2', 'B3' and 'V' can be used within conversion formula, where:
+                      B0 is first byte in value, B1 second byte, and so on
+                      V is the actual incoming value (composed of byte(s))
+                      examples;
+                      conversion="V/10" - result is incoming value / 10
+                      conversion="B0+15*(B1-43)" - result is 'first byte + 15 * (second byte - 43) -->
+
+      <!-- 1st CAN frame -->
+      <!-- RPM -->
+      <value targetId="37"	units="RPM" offset="0" length="2"></value>
+      <!-- Speed -->
+      <value targetId="136"	units="mph" offset="2" length="2"></value>
+      <!-- Fuel -->
+      <value targetId="170" units="%" offset="4" length="2"></value>
+      <!-- Selected Gear -->
+      <value targetId="140" offset="6" length="1"></value>
+    </frame>
+  </frames>
+</RealDashCAN>
+
