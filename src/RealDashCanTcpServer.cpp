@@ -5,14 +5,27 @@ static const char* canFrameMarker   = "\x44\x33\x22\x11";
 static const char* canFrameId       = "\x80\x0c\x00\x00";
 
 RealDashCanTcpServer::RealDashCanTcpServer(quint16 port, bool debug, QObject *parent) :
-    QObject(parent),
+    QDBusAbstractAdaptor(parent),
+    m_port(port),
     m_debug(debug),
     m_tcpServer(new QTcpServer(this)),
     m_timer(new QTimer(this))
 {
-    if (m_tcpServer->listen(QHostAddress::Any, port)) {
+}
+
+RealDashCanTcpServer::~RealDashCanTcpServer()
+{
+    stopServer();
+    delete m_timer;
+    delete m_tcpServer;
+}
+
+void RealDashCanTcpServer::startServer()
+{
+    resetData();
+    if (m_tcpServer->listen(QHostAddress::Any, m_port)) {
         if (m_debug)
-            qDebug() << "RealDash CAN server listening on port " << port;
+            qDebug() << "RealDash CAN server listening on port " << m_port;
         connect(m_tcpServer, &QTcpServer::newConnection,
                 this, &RealDashCanTcpServer::onNewConnection);
         connect(m_timer, &QTimer::timeout,
@@ -20,13 +33,55 @@ RealDashCanTcpServer::RealDashCanTcpServer(quint16 port, bool debug, QObject *pa
     }
 }
 
-RealDashCanTcpServer::~RealDashCanTcpServer()
+void RealDashCanTcpServer::stopServer()
 {
+    if (m_debug)
+        qDebug() << "RealDash CAN server stopped listening on port " << m_port;
     m_timer->stop();
+    // Disconnect all connected clints
+    disconnectAllClients();
+    disconnect(m_tcpServer, &QTcpServer::newConnection,
+            this, &RealDashCanTcpServer::onNewConnection);
+    disconnect(m_timer, &QTimer::timeout,
+            this, &RealDashCanTcpServer::onTimer);
+    resetData();
     m_tcpServer->close();
-    qDeleteAll(m_clients.begin(), m_clients.end());
-    delete m_timer;
-    delete m_tcpServer;
+}
+
+void RealDashCanTcpServer::resetData()
+{
+    m_revs = 0;
+    m_speedMph = 0;
+    m_fuelPercent = 0;
+    m_gear = 0;
+}
+
+void RealDashCanTcpServer::setRevs(ushort revs)
+{
+    m_revs = revs;
+    if (m_debug)
+        qDebug() << "DBus client set REVS to " << m_revs;
+}
+
+void RealDashCanTcpServer::setSpeed(ushort mph)
+{
+    m_speedMph = mph;
+    if (m_debug)
+        qDebug() << "DBus client set SPEED to " << m_speedMph;
+}
+
+void RealDashCanTcpServer::setFuelLevel(ushort fuelPercent)
+{
+    m_fuelPercent = fuelPercent;
+    if (m_debug)
+        qDebug() << "DBus client set FUEL to " << m_fuelPercent;
+}
+
+void RealDashCanTcpServer::setGear(uchar gear)
+{
+    m_gear = gear;
+    if (m_debug)
+        qDebug() << "DBus client set GEAR to " << m_gear;
 }
 
 void RealDashCanTcpServer::onNewConnection()
@@ -68,28 +123,37 @@ void RealDashCanTcpServer::onTimer()
     sendCanFramesToClients();
 }
 
+void RealDashCanTcpServer::disconnectAllClients()
+{
+    QList<QTcpSocket *>::iterator it;
+    for (it = m_clients.begin(); it != m_clients.end(); ++it)
+    {
+        QTcpSocket *pClient = *it;
+        if (m_debug)
+            qDebug() << "Disconnect: " << pClient->peerAddress();
+        disconnect(pClient, &QTcpSocket::disconnected, this, &RealDashCanTcpServer::onSocketDisconnected);
+        pClient->close();
+        pClient->deleteLater();
+    }
+    qDeleteAll(m_clients.begin(), m_clients.end());
+}
+
 void RealDashCanTcpServer::sendCanFramesToClients()
 {
-    // Consts for now
-    quint16 rpm = 3500;
-    quint16 speedMph = 120;
-    quint16 fuelPercent = 25;
-    char gear = 0;
-
     // Build CAN frame
     QByteArray canFrameData(canFrameMarker, 4);
     canFrameData.append(canFrameId, 4);
     // RPM
-    canFrameData.append(char((rpm & 0xff00) >> 8));
-    canFrameData.append(char(rpm & 0x00ff));
+    canFrameData.append(char((m_revs & 0xff00) >> 8));
+    canFrameData.append(char(m_revs & 0x00ff));
     // Speed - MPH
-    canFrameData.append(char((speedMph & 0xff00) >> 8));
-    canFrameData.append(char(speedMph & 0x00ff));
+    canFrameData.append(char((m_speedMph & 0xff00) >> 8));
+    canFrameData.append(char(m_speedMph & 0x00ff));
     // Fuel - %
-    canFrameData.append(char((fuelPercent & 0xff00) >> 8));
-    canFrameData.append(char(fuelPercent & 0x00ff));
+    canFrameData.append(char((m_fuelPercent & 0xff00) >> 8));
+    canFrameData.append(char(m_fuelPercent & 0x00ff));
     // Gear
-    canFrameData.append(gear);
+    canFrameData.append(char(m_gear));
 
     // Send CAN frame to all connected clints
     QList<QTcpSocket *>::iterator it;

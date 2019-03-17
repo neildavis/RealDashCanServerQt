@@ -7,6 +7,7 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5Core)
 find_package(Qt5Network)
+find_package(Qt5DBus)
 
 # Source location
 set(main_cpp_base ./src)
@@ -20,5 +21,5 @@ set(src_main
 
 add_executable(${PROJECT_NAME} ${src_main})
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::DBus)
 

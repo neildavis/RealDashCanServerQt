@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCommandLineOption>
+#include <QtDBus/QtDBus>
 
 #include "RealDashCanTcpServer.h"
 
@@ -25,7 +26,15 @@ int main(int argc, char *argv[])
     bool debug = parser.isSet(dbgOption);
     uint port = parser.value(portOption).toUInt();
 
-    new RealDashCanTcpServer(quint16(port), debug);
+    QObject obj;
+    RealDashCanTcpServer *server = new RealDashCanTcpServer(quint16(port), debug, &obj);
+    // Register the server on DBus
+    QDBusConnection::sessionBus().registerObject(CAN_SERVER_OBJECT_PATH, CAN_SERVER_INTERFACE, server);
 
+    if (!QDBusConnection::sessionBus().registerService(CAN_SERVER_SERVICE_NAME)) {
+        fprintf(stderr, "%s\n",
+                qPrintable(QDBusConnection::sessionBus().lastError().message()));
+        exit(1);
+    }
     return a.exec();
 }
