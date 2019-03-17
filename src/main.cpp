@@ -27,9 +27,13 @@ int main(int argc, char *argv[])
     uint port = parser.value(portOption).toUInt();
 
     QObject obj;
-    RealDashCanTcpServer *server = new RealDashCanTcpServer(quint16(port), debug, &obj);
+    new RealDashCanTcpServer(quint16(port), debug, &obj);
     // Register the server on DBus
-    QDBusConnection::sessionBus().registerObject(CAN_SERVER_OBJECT_PATH, CAN_SERVER_INTERFACE, server);
+    if (!QDBusConnection::sessionBus().registerObject(CAN_SERVER_OBJECT_PATH, CAN_SERVER_INTERFACE, &obj)) {
+        fprintf(stderr, "%s\n",
+                qPrintable(QDBusConnection::sessionBus().lastError().message()));
+        exit(1);
+    }
 
     if (!QDBusConnection::sessionBus().registerService(CAN_SERVER_SERVICE_NAME)) {
         fprintf(stderr, "%s\n",

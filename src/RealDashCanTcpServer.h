@@ -10,7 +10,7 @@ QT_FORWARD_DECLARE_CLASS(QTimer)
 
 #define CAN_SERVER_SERVICE_NAME "nd.realdash.canserver"
 #define CAN_SERVER_INTERFACE    "nd.realdash.canserver.DashBoard"
-#define CAN_SERVER_OBJECT_PATH  "nd/realdash/canserver"
+#define CAN_SERVER_OBJECT_PATH  "/nd/realdash/canserver"
 
 /**
  * @brief The RealDashCanTcpServer class implements a RealDash CAN Server for RealDash clients. The data inputs are exposed over DBus
