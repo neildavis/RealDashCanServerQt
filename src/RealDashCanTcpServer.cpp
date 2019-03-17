@@ -139,7 +139,7 @@ void RealDashCanTcpServer::disconnectAllClients()
         pClient->close();
         pClient->deleteLater();
     }
-    qDeleteAll(m_clients.begin(), m_clients.end());
+    m_clients.clear();
 }
 
 void RealDashCanTcpServer::sendCanFramesToClients()
