@@ -61,6 +61,7 @@ void RealDashCanTcpServer::setRevs(ushort revs)
     m_revs = revs;
     if (m_debug)
         qDebug() << "DBus client set REVS to " << m_revs;
+    sendCanFramesToClients();
 }
 
 void RealDashCanTcpServer::setSpeed(ushort mph)
@@ -68,6 +69,7 @@ void RealDashCanTcpServer::setSpeed(ushort mph)
     m_speedMph = mph;
     if (m_debug)
         qDebug() << "DBus client set SPEED to " << m_speedMph;
+    sendCanFramesToClients();
 }
 
 void RealDashCanTcpServer::setFuelLevel(ushort fuelPercent)
@@ -75,6 +77,7 @@ void RealDashCanTcpServer::setFuelLevel(ushort fuelPercent)
     m_fuelPercent = fuelPercent;
     if (m_debug)
         qDebug() << "DBus client set FUEL to " << m_fuelPercent;
+    sendCanFramesToClients();
 }
 
 void RealDashCanTcpServer::setGear(uchar gear)
@@ -82,6 +85,7 @@ void RealDashCanTcpServer::setGear(uchar gear)
     m_gear = gear;
     if (m_debug)
         qDebug() << "DBus client set GEAR to " << m_gear;
+    sendCanFramesToClients();
 }
 
 void RealDashCanTcpServer::onNewConnection()
