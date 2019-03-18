@@ -23,7 +23,8 @@ RealDashCanTcpServer::~RealDashCanTcpServer()
 void RealDashCanTcpServer::startServer()
 {
     resetData();
-    if (m_tcpServer->listen(QHostAddress::Any, m_port)) {
+    if (!m_tcpServer->isListening() && m_tcpServer->listen(QHostAddress::Any, m_port))
+    {
         if (m_debug)
             qDebug() << "RealDash CAN server listening on port " << m_port;
         connect(m_tcpServer, &QTcpServer::newConnection,
@@ -35,17 +36,20 @@ void RealDashCanTcpServer::startServer()
 
 void RealDashCanTcpServer::stopServer()
 {
-    if (m_debug)
-        qDebug() << "RealDash CAN server stopped listening on port " << m_port;
-    m_timer->stop();
-    // Disconnect all connected clints
-    disconnectAllClients();
-    disconnect(m_tcpServer, &QTcpServer::newConnection,
-            this, &RealDashCanTcpServer::onNewConnection);
-    disconnect(m_timer, &QTimer::timeout,
-            this, &RealDashCanTcpServer::onTimer);
-    resetData();
-    m_tcpServer->close();
+    if (m_tcpServer->isListening())
+    {
+        m_timer->stop();
+        // Disconnect all connected clints
+        disconnectAllClients();
+        disconnect(m_tcpServer, &QTcpServer::newConnection,
+                   this, &RealDashCanTcpServer::onNewConnection);
+        disconnect(m_timer, &QTimer::timeout,
+                   this, &RealDashCanTcpServer::onTimer);
+        resetData();
+        m_tcpServer->close();
+        if (m_debug)
+            qDebug() << "RealDash CAN server stopped listening on port " << m_port;
+    }
 }
 
 void RealDashCanTcpServer::resetData()
