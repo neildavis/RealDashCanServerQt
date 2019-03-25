@@ -23,3 +23,7 @@ add_executable(${PROJECT_NAME} ${src_main})
 
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::DBus)
 
+set(config_base ./config)
+configure_file("${config_base}/${PROJECT_NAME}.service" "${PROJECT_NAME.service}")
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.service" DESTINATION "$ENV{HOME}/.config/systemd/user")

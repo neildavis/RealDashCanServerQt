@@ -1,0 +1,11 @@
+[Unit]
+Description=RealDash CAN server
+
+[Service]
+Type=dbus
+BusName=nd.realdash.canserver
+ExecStart=${CMAKE_INSTALL_PREFIX}/bin/RealDashCanServerQt
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
