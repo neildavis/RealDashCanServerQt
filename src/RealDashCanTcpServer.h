@@ -31,7 +31,7 @@ public slots:
     Q_NOREPLY void setRevs(ushort revs);
     Q_NOREPLY void setSpeed(ushort mph);
     Q_NOREPLY void setFuelLevel(ushort fuelPercent);
-    Q_NOREPLY void setGear(uchar gear);
+    Q_NOREPLY void setGear(ushort gear);
 
 signals:
 
@@ -57,7 +57,7 @@ private:
     quint16 m_revs;
     quint16 m_speedMph;
     quint16 m_fuelPercent;
-    quint8 m_gear;
+    quint16 m_gear;
 };
 
 #endif // REALDASHCANTCPSERVER_H

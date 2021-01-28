@@ -2,7 +2,7 @@
 #include <QtNetwork>
 
 static const char* canFrameMarker   = "\x44\x33\x22\x11";
-static const char* canFrameId       = "\x80\x0c\x00\x00";
+static const quint32 canFrameId     = 3200;
 
 RealDashCanTcpServer::RealDashCanTcpServer(quint16 port, bool debug, QObject *parent) :
     QDBusAbstractAdaptor(parent),
@@ -84,7 +84,7 @@ void RealDashCanTcpServer::setFuelLevel(ushort fuelPercent)
     sendCanFramesToClients();
 }
 
-void RealDashCanTcpServer::setGear(uchar gear)
+void RealDashCanTcpServer::setGear(ushort gear)
 {
     m_gear = gear;
     if (m_debug)
@@ -149,19 +149,26 @@ void RealDashCanTcpServer::disconnectAllClients()
 void RealDashCanTcpServer::sendCanFramesToClients()
 {
     // Build CAN frame
+    
+    // Frame marker
     QByteArray canFrameData(canFrameMarker, 4);
-    canFrameData.append(canFrameId, 4);
+    // Frame id
+    canFrameData.append(char(canFrameId & 0x000000ff));
+    canFrameData.append(char((canFrameId & 0x0000ff00) >> 8));
+    canFrameData.append(char((canFrameId & 0x00ff0000) >> 16));
+    canFrameData.append(char((canFrameId & 0xff000000) >> 24));
     // RPM
-    canFrameData.append(char((m_revs & 0xff00) >> 8));
     canFrameData.append(char(m_revs & 0x00ff));
+    canFrameData.append(char((m_revs & 0xff00) >> 8));
     // Speed - MPH
-    canFrameData.append(char((m_speedMph & 0xff00) >> 8));
     canFrameData.append(char(m_speedMph & 0x00ff));
+    canFrameData.append(char((m_speedMph & 0xff00) >> 8));
     // Fuel - %
-    canFrameData.append(char((m_fuelPercent & 0xff00) >> 8));
     canFrameData.append(char(m_fuelPercent & 0x00ff));
+    canFrameData.append(char((m_fuelPercent & 0xff00) >> 8));
     // Gear
-    canFrameData.append(char(m_gear));
+    canFrameData.append(char(m_gear & 0x00ff));
+    canFrameData.append(char((m_gear & 0xff00) >> 8));
 
     // Send CAN frame to all connected clints
     QList<QTcpSocket *>::iterator it;

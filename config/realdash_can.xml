@@ -3,12 +3,12 @@
 RealDash CAN protocol example
 Requires RealDash version 1.3.0 or newer
 -->
-<RealDashCAN>
+<RealDashCAN version="2">
   <!-- baseId [optional] is added to each frame canId. -->
   <!-- frames baseId="3200" -->
   <frames>
     <!-- 'canId' can identifier (= baseId + canId) -->
-    <frame canId="3200">
+    <frame id="3200">
       <!-- 'targetId' links value to RealDash input, see 'realdash_target_identifiers.txt for a complete list -->
       <!-- OR -->
       <!-- 'name' links value to RealDash input, if name is unknown to RealDash, input appears in 'ECU Specific' input category -->
@@ -31,7 +31,7 @@ Requires RealDash version 1.3.0 or newer
       <!-- Fuel -->
       <value targetId="170" units="%" offset="4" length="2"></value>
       <!-- Selected Gear -->
-      <value targetId="140" offset="6" length="1"></value>
+      <value targetId="140" offset="6" length="2"></value>
     </frame>
   </frames>
 </RealDashCAN>
