@@ -40,7 +40,7 @@ Install the following via your preferred package manager:
 ## Building
 
 ### Command line
-From the root directory, create a buld dir and use cmake to create the makefiles and make to build the project:
+From the root directory, create a build dir and use cmake to create the makefiles and make to build the project:
 ```bash
 mkdir build
 cd build
@@ -48,7 +48,7 @@ cmake -G "Unix Makefiles" ..
 make
 ```
 ### Xcode (macOS)
-From the root directory, create a buld dir and use cmake to create your Xcode project file and open with Xcode
+From the root directory, create a build dir and use cmake to create your Xcode project file and open with Xcode
 ```bash
 mkdir build
 cd build
@@ -59,9 +59,9 @@ Build & Run in the usual way from Xcode
 ## Installation
 Installation on Linux is currently supported by creating a systemd service using D-Bus activation. This means the service is started automatically when clients start to communicate with the server via D-Bus.
 
-After building, simply use cmake to install from the build dir using sudo:
+After building, simply use make to install from the build dir using sudo:
 ```bash
-sudo cmake install
+sudo make install
 ```
 ## Sending metrics to the server ##
 The server receives data via D-Bus, so you can use any language that has D-Bus binding library support. 
