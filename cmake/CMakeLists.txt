@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 
+set(CMDIR ../cmake)
+set(config_base ../config)
+
 project(RealDashCanServerQt VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -10,7 +13,7 @@ find_package(Qt5Network)
 find_package(Qt5DBus)
 
 # Source location
-set(main_cpp_base ./src)
+set(main_cpp_base ../src)
 
 # Source files
 set(src_main
@@ -23,7 +26,21 @@ add_executable(${PROJECT_NAME} ${src_main})
 
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::DBus)
 
-set(config_base ./config)
-configure_file("${config_base}/${PROJECT_NAME}.service" "${PROJECT_NAME.service}")
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
-install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.service" DESTINATION "$ENV{HOME}/.config/systemd/user")
+
+# Include relevant CMAKE file (default, mingw, pandora etc.)
+set(DCMAKE default.cmake)
+if(TARGET)
+    set(TCMAKE ${TARGET}.cmake)
+    if(EXISTS ${CMDIR}/${TCMAKE})
+        message("CMake files for ${TARGET} found, using ${TCMAKE}")
+        include(${TCMAKE})
+    else()
+        message("CMake files for ${TARGET} not found, using ${DCMAKE}")
+        include(${DCMAKE})
+    endif()
+else()
+    message("TARGET not passed, using ${DCMAKE}")
+    include(${DCMAKE})
+endif(TARGET)
+
