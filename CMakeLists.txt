@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 
+set(CMAKE_INSTALL_PREFIX $ENV{HOME})
+
 project(RealDashCanServerQt VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -26,4 +28,4 @@ target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::DBus)
 set(config_base ./config)
 configure_file("${config_base}/${PROJECT_NAME}.service" "${PROJECT_NAME.service}")
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
-install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.service" DESTINATION "$ENV{HOME}/.config/systemd/user")
+install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.service" DESTINATION ".config/systemd/user")

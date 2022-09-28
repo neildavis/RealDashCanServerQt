@@ -59,9 +59,9 @@ Build & Run in the usual way from Xcode
 ## Installation
 Installation on Linux is currently supported by creating a systemd service using D-Bus activation. This means the service is started automatically when clients start to communicate with the server via D-Bus.
 
-After building, simply use make to install from the build dir using sudo:
+After building, simply use make to install from the build dir:
 ```bash
-sudo make install
+make install
 ```
 ## Sending metrics to the server ##
 The server receives data via D-Bus, so you can use any language that has D-Bus binding library support. 

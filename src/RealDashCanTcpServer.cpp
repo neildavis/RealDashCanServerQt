@@ -23,7 +23,7 @@ RealDashCanTcpServer::~RealDashCanTcpServer()
 void RealDashCanTcpServer::startServer()
 {
     resetData();
-    if (!m_tcpServer->isListening() && m_tcpServer->listen(QHostAddress::Any, m_port))
+    if (!m_tcpServer->isListening() && m_tcpServer->listen(QHostAddress::AnyIPv4, m_port))
     {
         if (m_debug)
             qDebug() << "RealDash CAN server listening on port " << m_port;
