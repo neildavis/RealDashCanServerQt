@@ -54,6 +54,8 @@ void RealDashCanTcpServer::stopServer()
 
 void RealDashCanTcpServer::resetData()
 {
+    if (m_debug)
+        qDebug() << "Reset metrics data to zero";
     m_revs = 0;
     m_speedMph = 0;
     m_fuelPercent = 0;
@@ -63,32 +65,28 @@ void RealDashCanTcpServer::resetData()
 void RealDashCanTcpServer::setRevs(ushort revs)
 {
     m_revs = revs;
-    if (m_debug)
-        qDebug() << "DBus client set REVS to " << m_revs;
+    qDebugMetricUnsignedShort("REVS", m_revs);
     sendCanFramesToClients();
 }
 
 void RealDashCanTcpServer::setSpeed(ushort mph)
 {
     m_speedMph = mph;
-    if (m_debug)
-        qDebug() << "DBus client set SPEED to " << m_speedMph;
+    qDebugMetricUnsignedShort("SPEED", m_speedMph);
     sendCanFramesToClients();
 }
 
 void RealDashCanTcpServer::setFuelLevel(ushort fuelPercent)
 {
     m_fuelPercent = fuelPercent;
-    if (m_debug)
-        qDebug() << "DBus client set FUEL to " << m_fuelPercent;
+    qDebugMetricUnsignedShort("FUEL", m_fuelPercent);
     sendCanFramesToClients();
 }
 
 void RealDashCanTcpServer::setGear(ushort gear)
 {
     m_gear = gear;
-    if (m_debug)
-        qDebug() << "DBus client set GEAR to " << m_gear;
+    qDebugMetricUnsignedShort("GEAR", m_gear);
     sendCanFramesToClients();
 }
 
@@ -179,4 +177,10 @@ void RealDashCanTcpServer::sendCanFramesToClients()
             qDebug() << "Send CAN data to: " << pClient->peerAddress();
         pClient->write(canFrameData);
     }
+}
+
+void RealDashCanTcpServer::qDebugMetricUnsignedShort(const char *name, ushort value)
+{
+    if (m_debug)
+        qDebug() << "DBus client set" << name << "to" << value << "(" << hex << showbase << value << ")";
 }

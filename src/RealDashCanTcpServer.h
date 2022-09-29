@@ -45,6 +45,7 @@ private slots:
 private:
     void disconnectAllClients();
     void sendCanFramesToClients();
+    void qDebugMetricUnsignedShort(const char *name, ushort value);
 
 private:
     quint16 m_port;
